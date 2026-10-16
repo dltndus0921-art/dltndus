@@ -12,7 +12,7 @@ function doGet() {
 
 function buildApp_() {
   return HtmlService.createHtmlOutputFromFile('index')
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover');
 }
 
 // ---------- 현재 사용자(회원) 찾기 ----------

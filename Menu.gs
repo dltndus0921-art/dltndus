@@ -13,7 +13,7 @@ function onOpen() {
 }
 
 function menuOpenApp() {
-  const html = buildApp_().setWidth(480).setHeight(780);
+  const html = buildApp_().setWidth(430).setHeight(780);
   SpreadsheetApp.getUi().showModalDialog(html, CENTER.name);
 }
 
