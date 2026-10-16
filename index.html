@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>온마을 복지관</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,500,0,0&display=block">
+  <style>
+    /* ===== 디자인 토큰 (Stitch "Warm Community Care" 테마) ===== */
+    :root {
+      --primary: #2A9D8F; --primary-dark: #1F7F74; --amber: #F59E0B;
+      --ink: #1F2937; --sub: #4B5563; --bg: #FAF9F6; --card: #FFFFFF;
+      --line: #E5E7EB; --mint: #E8F5E9; --danger: #BA1A1A;
+      --shadow: 0 4px 16px rgba(31, 41, 55, .05); --glow: 0 12px 32px rgba(42, 157, 143, .12);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    [hidden] { display: none !important; }
+    html { font-size: 16px; }
+    body {
+      margin: 0; background: #EAF0EC; color: var(--ink); line-height: 1.6; font-size: 1rem;
+      word-break: keep-all; overflow-wrap: break-word;
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    }
+    body.noscroll { overflow: hidden; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    h1, h2, h3, p, ul { margin: 0; padding: 0; }
+    ul { list-style: none; }
+    a { color: inherit; text-decoration: none; }
+    :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+    .app { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--bg); padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 0 40px rgba(31, 41, 55, .08); }
+    main { padding: 1rem; }
+    .stack { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    /* 아이콘(Material Symbols). 글꼴이 안 불러와져도 글자가 길게 보이지 않게 폭을 고정 */
+    .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 1.5rem; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; width: 1.5rem; height: 1.5rem; overflow: hidden; vertical-align: middle; flex: none; font-feature-settings: 'liga'; -webkit-font-feature-settings: 'liga'; }
+    .ms.sm { font-size: 1.25rem; width: 1.25rem; height: 1.25rem; }
+    .ms.lg { font-size: 2rem; width: 2rem; height: 2rem; }
+
+    /* ===== 상단바 · 하단 탭 ===== */
+    .topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 8px; padding: 10px 1rem; background: rgba(250, 249, 246, .96); border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 8px; margin-right: auto; font-weight: 700; font-size: 1.1875rem; color: var(--primary-dark); }
+    .brand .ms { color: var(--primary); }
+    .pill-btn { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 14px; border: 2px solid var(--primary); background: var(--mint); color: var(--primary-dark); border-radius: 999px; font-weight: 700; font-size: .9375rem; white-space: nowrap; }
+    .tabbar { position: fixed; left: 50%; transform: translateX(-50%); bottom: 0; width: 100%; max-width: 480px; z-index: 30; display: grid; grid-template-columns: repeat(4, 1fr); background: #fff; border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); box-shadow: 0 -4px 16px rgba(31, 41, 55, .06); }
+    .tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 68px; border: 0; background: none; color: var(--sub); font-weight: 600; font-size: .8125rem; }
+    .tab .ms { width: 3.5rem; padding: 2px 0; text-align: center; border-radius: 999px; }
+    .tab[aria-current="page"] { color: var(--primary-dark); font-weight: 700; }
+    .tab[aria-current="page"] .ms { background: var(--mint); }
+
+    /* ===== 공통 부품 ===== */
+    .card { background: var(--card); border: 1px solid #F3F4F6; border-radius: 20px; padding: 1.25rem; box-shadow: var(--shadow); }
+    .center { text-align: center; color: var(--sub); }
+    .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 54px; padding: 8px 18px; border-radius: 16px; border: 2px solid transparent; font-weight: 700; font-size: 1.125rem; text-align: center; transition: transform .08s; }
+    .btn:active { transform: scale(.98); }
+    .btn.primary { background: var(--primary); color: #fff; }
+    .btn.second { background: var(--mint); color: var(--primary-dark); border-color: var(--primary); font-size: 1.0625rem; min-height: 52px; }
+    .btn.ghost { background: #fff; color: var(--sub); border-color: var(--line); }
+    .btn.amber { background: #FEF3C7; color: #92400E; border-color: var(--amber); }
+    .btn.sm { min-height: 48px; font-size: 1rem; }
+    .btn:disabled { opacity: .65; cursor: default; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 12px; border-radius: 999px; font-size: .875rem; font-weight: 700; white-space: nowrap; }
+    .chip.ok { background: #DCFCE7; color: #166534; }
+    .chip.soon { background: #FEF3C7; color: #92400E; }
+    .chip.closed { background: #F3F4F6; color: #6B7280; }
+    .chip.tag { background: var(--mint); color: var(--primary-dark); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #16A34A; display: inline-block; }
+    .chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 1px 6px; scrollbar-width: none; }
+    .fchip { flex: none; min-height: 48px; padding: 0 18px; border-radius: 999px; border: 2px solid var(--line); background: #fff; font-weight: 700; }
+    .fchip[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .input { width: 100%; min-height: 56px; padding: 0 16px; border: 2px solid var(--line); border-radius: 14px; font: inherit; font-size: 1.125rem; background: #fff; color: var(--ink); }
+    .input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(42, 157, 143, .15); }
+    textarea.input { padding: 12px 16px; min-height: 150px; resize: vertical; line-height: 1.7; }
+    .eyebrow { display: flex; align-items: center; gap: 6px; color: var(--primary-dark); font-weight: 700; font-size: .9375rem; }
+    h1 { font-size: 1.625rem; line-height: 1.4; font-weight: 700; letter-spacing: -.02em; }
+    h2 { font-size: 1.25rem; line-height: 1.5; font-weight: 700; }
+    h3 { font-size: 1.1875rem; line-height: 1.5; font-weight: 700; }
+    .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+    .facts { display: flex; flex-direction: column; gap: 8px; margin: 12px 0 16px; }
+    .facts li { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; }
+    .facts .ms { color: var(--primary); margin-top: 2px; }
+    .sub { display: flex; align-items: center; gap: 6px; color: var(--sub); font-weight: 600; margin-top: 2px; }
+    .empty { padding: 1.5rem 1rem; text-align: center; color: var(--sub); }
+    .error-box { background: #FFDAD6; color: #93000A; border-radius: 16px; padding: 1rem; }
+    .demo { margin-top: 8px; padding: 8px 12px; background: #FEF3C7; color: #92400E; border-radius: 12px; font-size: .875rem; font-weight: 600; }
+
+    /* ===== 홈 ===== */
+    .hero { background: linear-gradient(160deg, #fff 0%, var(--mint) 100%); }
+    .hero-sub { color: var(--primary-dark); font-weight: 700; font-size: .9375rem; margin-bottom: 4px; }
+    .today-box { display: flex; align-items: center; gap: 12px; margin-top: 16px; padding: 14px; border-radius: 16px; background: #fff; border: 2px solid var(--amber); }
+    .today-box .ms { color: var(--amber); }
+    .today-box.none { border-color: var(--line); }
+    .today-box.none .ms { color: var(--sub); }
+    .today-box b { display: block; }
+    .today-box small { color: var(--sub); font-weight: 600; font-size: .875rem; }
+    .today-box .grow { flex: 1; min-width: 0; }
+    .today-box .mini { flex: none; width: auto; min-height: 44px; padding: 0 16px; font-size: 1rem; }
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+    .stat { display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 8px 14px; border-radius: 14px; border: 2px solid var(--line); background: #fff; font-weight: 600; text-align: left; }
+    .stat > span { display: flex; flex-direction: column; line-height: 1.25; }
+    .stat small { font-size: .875rem; color: var(--sub); font-weight: 600; }
+    .stat b { font-size: 1.375rem; color: var(--primary-dark); }
+    .stat .ms { color: var(--primary); }
+    .quick { display: flex; flex-direction: column; gap: 10px; }
+    .qrow { display: flex; align-items: center; gap: 14px; min-height: 76px; padding: 12px 16px; background: #fff; border: 2px solid var(--line); border-radius: 18px; text-align: left; width: 100%; }
+    .qrow .qic { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; background: var(--mint); color: var(--primary-dark); flex: none; }
+    .qrow .qt { flex: 1; min-width: 0; }
+    .qrow b { display: block; font-size: 1.125rem; }
+    .qrow small { color: var(--sub); font-weight: 500; font-size: .9375rem; }
+    .sec-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .link-btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--primary-dark); font-weight: 700; }
+
+    /* ===== 프로그램 ===== */
+    .search { position: relative; }
+    .search > .ms { position: absolute; left: 14px; top: 16px; color: var(--sub); }
+    .search .input { padding-left: 46px; padding-right: 48px; }
+    .search .clear { position: absolute; right: 4px; top: 4px; width: 48px; height: 48px; border: 0; background: none; color: var(--sub); display: grid; place-items: center; }
+    .count { font-weight: 700; color: var(--sub); }
+    .count b { color: var(--primary-dark); }
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .prog h3 { margin-bottom: 2px; }
+
+    /* ===== 도움 배너 ===== */
+    .help { display: flex; flex-direction: column; gap: 12px; background: var(--mint); border-color: #CDE8D1; }
+    .help-top { display: flex; align-items: center; gap: 12px; }
+    .help-ic { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: #fff; color: var(--primary); flex: none; }
+    .help p { color: var(--sub); font-weight: 500; }
+
+    /* ===== 어울림 마당 ===== */
+    .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; background: #fff; border: 2px solid var(--line); border-radius: 18px; }
+    .seg button { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 50px; border: 0; border-radius: 13px; background: none; font-weight: 700; font-size: .9375rem; color: var(--sub); }
+    .seg button[aria-pressed="true"] { background: var(--primary); color: #fff; }
+    .today-say { background: #FFF8E7; border-color: #FDE7B0; }
+    .today-say .eyebrow { color: #92400E; }
+    .post-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .avatar { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: #fff; font-weight: 700; font-size: 1.125rem; flex: none; }
+    .post-meta { flex: 1; min-width: 0; }
+    .post-meta b { font-size: 1.0625rem; }
+    .post-meta small { display: block; color: var(--sub); font-weight: 500; font-size: .875rem; }
+    .post-body { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 1.0625rem; line-height: 1.75; margin-top: 4px; }
+    .post-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .act { display: inline-flex; align-items: center; gap: 4px; min-height: 48px; padding: 0 10px; border-radius: 14px; border: 2px solid var(--line); background: #fff; font-weight: 600; font-size: .9375rem; }
+    .act.on { background: #FFE4E6; border-color: #FDA4AF; color: #9F1239; }
+    .cmts { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+    .cmt { background: #F7F7F5; border-radius: 14px; padding: 10px 14px; }
+    .cmt b { font-size: .9375rem; }
+    .cmt small { color: var(--sub); margin-left: 6px; }
+    .cmt p { overflow-wrap: anywhere; }
+    .cmt-form { display: flex; flex-direction: column; gap: 8px; }
+    .vol-card .vol-top { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+
+    /* ===== 마이 활동 ===== */
+    .profile { display: flex; align-items: center; gap: 14px; }
+    .profile .avatar { width: 64px; height: 64px; font-size: 1.5rem; }
+    .profile h2 { font-size: 1.375rem; }
+    .mystats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+    .mystat { text-align: center; padding: 12px 4px; background: var(--mint); border-radius: 14px; }
+    .mystat b { display: block; font-size: 1.375rem; color: var(--primary-dark); }
+    .mystat span { font-size: .875rem; font-weight: 600; color: var(--sub); }
+    .session { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 2px solid var(--amber); border-radius: 16px; background: #FFFBF0; }
+    .session + .session { margin-top: 10px; }
+    .progress { height: 14px; background: #E5E7EB; border-radius: 999px; overflow: hidden; margin: 6px 0 4px; }
+    .progress i { display: block; height: 100%; background: var(--primary); border-radius: 999px; }
+    .pg-label { display: flex; justify-content: space-between; font-weight: 600; font-size: .9375rem; color: var(--sub); }
+    .enr + .enr { margin-top: 0; }
+    .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .cal-nav { display: grid; place-items: center; width: 48px; height: 48px; border: 2px solid var(--line); border-radius: 14px; background: #fff; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-dow { text-align: center; font-weight: 700; font-size: .875rem; color: var(--sub); padding: 4px 0; }
+    .cal-cell { position: relative; min-height: 48px; border: 0; border-radius: 12px; background: #fff; font-weight: 600; padding: 4px 0 10px; }
+    .cal-cell.empty { background: none; }
+    .cal-cell.today { background: var(--primary); color: #fff; }
+    .cal-cell.sel { outline: 3px solid var(--amber); outline-offset: -3px; }
+    .cal-cell .dots { position: absolute; left: 0; right: 0; bottom: 5px; display: flex; justify-content: center; gap: 3px; }
+    .cal-cell .dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); }
+    .cal-cell .dots i.v { background: var(--amber); }
+    .cal-cell.today .dots i { background: #fff; }
+    .cal-cell.today .dots i.v { background: #FDE68A; }
+    .legend { display: flex; gap: 14px; margin-top: 10px; font-size: .875rem; font-weight: 600; color: var(--sub); }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .legend i { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); }
+    .legend i.v { background: var(--amber); }
+    .day-list { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .big-num { font-size: 2.25rem; font-weight: 700; color: var(--primary-dark); line-height: 1.2; }
+    .log { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); font-weight: 500; }
+    .log b { color: var(--primary-dark); white-space: nowrap; }
+    .fontseg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+    .fontseg button { min-height: 56px; border-radius: 14px; border: 2px solid var(--line); background: #fff; font-weight: 700; }
+    .fontseg button[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    /* ===== 모달(아래에서 올라오는 시트) · 알림 · 로딩 ===== */
+    .backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(17, 24, 39, .5); display: flex; align-items: flex-end; justify-content: center; }
+    .sheet { width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; background: #fff; border-radius: 24px 24px 0 0; padding: 1.25rem; box-shadow: var(--glow); }
+    .sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .sheet-head h2 { display: flex; align-items: center; gap: 8px; }
+    .x { display: grid; place-items: center; width: 48px; height: 48px; border: 0; border-radius: 50%; background: #F3F4F6; }
+    .box { padding: 14px; border-radius: 16px; background: #F7F7F5; margin-bottom: 12px; }
+    .box .label { color: var(--sub); font-weight: 600; font-size: .9375rem; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+    .note { color: var(--sub); font-weight: 500; margin-bottom: 12px; }
+    .sheet-actions { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; margin-top: 8px; }
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .field > span { font-weight: 700; }
+    .field .hint { color: var(--sub); font-size: .875rem; font-weight: 500; text-align: right; }
+    .toast { position: fixed; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px); z-index: 70; padding: 14px 20px; border-radius: 16px; background: #1F2937; color: #fff; font-weight: 600; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+    .toast.err { background: #93000A; }
+    .loading { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(250, 249, 246, .65); }
+    .spinner { width: 52px; height: 52px; border: 6px solid var(--mint); border-top-color: var(--primary); border-radius: 50%; animation: spin .9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 3s; } .btn { transition: none; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="ms" aria-hidden="true">diversity_1</span><span id="brand-name">온마을 복지관</span></div>
+      <button type="button" class="pill-btn" data-action="fontCycle" aria-label="글자 크기 바꾸기">
+        <span class="ms sm" aria-hidden="true">format_size</span><span id="font-label">보통</span>
+      </button>
+    </header>
+    <main id="main"></main>
+    <nav class="tabbar" aria-label="주요 메뉴">
+      <button type="button" class="tab" data-action="tab" data-tab="home" aria-current="page"><span class="ms" aria-hidden="true">home</span>홈</button>
+      <button type="button" class="tab" data-action="tab" data-tab="programs" aria-current="false"><span class="ms" aria-hidden="true">calendar_month</span>프로그램 신청</button>
+      <button type="button" class="tab" data-action="tab" data-tab="community" aria-current="false"><span class="ms" aria-hidden="true">forum</span>어울림 마당</button>
+      <button type="button" class="tab" data-action="tab" data-tab="my" aria-current="false"><span class="ms" aria-hidden="true">assignment_ind</span>마이 활동</button>
+    </nav>
+  </div>
+
+  <div id="sheet-root"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <div id="loading" class="loading" role="alert" aria-label="불러오는 중" hidden><div class="spinner"></div></div>
+
+  <script>
+    /* =====================================================================
+       온마을 복지관 앱 프론트엔드 (index.html 한 파일)
+       - 데이터는 모두 google.script.run → Code.gs 의 getAppData()/쓰기 함수로 받는다.
+       - 쓰기 함수는 결과로 { message, app } 을 돌려주고, app 으로 화면을 다시 그린다.
+       ===================================================================== */
+    const FONT_LEVELS = [{ px: 16, label: '보통' }, { px: 18, label: '크게' }, { px: 20, label: '아주 크게' }];
+    const S = {
+      app: null, error: '', tab: 'home',
+      cat: '전체', q: '', postType: '전체', seg: 'stories',
+      openComments: {}, drafts: {}, calMonth: '', calSel: '', font: 0, busy: 0
+    };
+
+    const $ = id => document.getElementById(id);
+    const esc = v => String(v === null || v === undefined ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    const ic = (name, cls) => '<span class="ms' + (cls ? ' ' + cls : '') + '" aria-hidden="true">' + name + '</span>';
+    const pad = n => String(n).padStart(2, '0');
+    const dateKo = ymd => { const p = String(ymd).split('-').map(Number); return p[1] + '월 ' + p[2] + '일'; };
+    const honorific = me => (me.age !== null && me.age >= 65) ? '어르신' : '님';
+    const fact = (icon, text) => text ? '<li>' + ic(icon, 'sm') + '<span>' + esc(text) + '</span></li>' : '';
+
+    // ---------- 서버 호출 ----------
+    function api(name, args) {
+      return new Promise((resolve, reject) => {
+        if (typeof google === 'undefined' || !google.script || !google.script.run) {
+          reject(new Error('이 화면은 Apps Script 웹앱 안에서만 동작합니다.'));
+          return;
+        }
+        const runner = google.script.run
+          .withSuccessHandler(resolve)
+          .withFailureHandler(err => reject(new Error((err && err.message) || String(err))));
+        runner[name].apply(runner, args || []);
+      });
+    }
+
+    function setBusy(on) {
+      S.busy += on ? 1 : -1;
+      $('loading').hidden = S.busy <= 0;
+    }
+
+    /** 쓰기 함수를 부르고, 결과의 app 으로 화면을 갱신한다. 실패하면 알림만 띄우고 null */
+    async function act(name, args) {
+      setBusy(true);
+      try {
+        const res = await api(name, args);
+        if (res && res.app) { S.app = res.app; render(); }
+        if (res && res.message) toast(res.message);
+        return res || {};
+      } catch (e) {
+        toast(e.message, true);
+        return null;
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function loadApp() {
+      S.error = '';
+      render();
+      setBusy(true);
+      try {
+        S.app = await api('getAppData', []);
+        S.calMonth = S.app.today.date.slice(0, 7);
+        $('brand-name').textContent = S.app.center.name;
+      } catch (e) {
+        S.error = e.message;
+      } finally {
+        setBusy(false);
+      }
+      render();
+    }
+
+    // ---------- 알림 · 글자 크기 · 음성 ----------
+    function toast(msg, isErr) {
+      const el = $('toast');
+      el.textContent = msg;
+      el.className = 'toast' + (isErr ? ' err' : '');
+      el.hidden = false;
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => { el.hidden = true; }, 4200);
+    }
+
+    function applyFont(level) {
+      S.font = level;
+      document.documentElement.style.fontSize = FONT_LEVELS[level].px + 'px';
+      $('font-label').textContent = FONT_LEVELS[level].label;
+      try { localStorage.setItem('ieum.font', String(level)); } catch (e) { /* 저장 못 해도 화면은 정상 */ }
+    }
+
+    function loadFont() {
+      try {
+        const v = Number(localStorage.getItem('ieum.font'));
+        if (v >= 0 && v < FONT_LEVELS.length) S.font = v;
+      } catch (e) { /* 저장된 값이 없으면 기본값 */ }
+      applyFont(S.font);
+    }
+
+    function speak(text) {
+      if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+        toast('이 기기에서는 음성 안내를 쓸 수 없어요.', true);
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'ko-KR';
+      u.rate = 0.9;
+      window.speechSynthesis.speak(u);
+    }
+
+    function dictate() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) { toast('이 기기에서는 말로 쓰기를 쓸 수 없어요.', true); return; }
+      const r = new SR();
+      r.lang = 'ko-KR';
+      r.interimResults = false;
+      r.onresult = ev => {
+        const ta = $('c-content');
+        if (ta) ta.value = (ta.value ? ta.value + ' ' : '') + ev.results[0][0].transcript;
+      };
+      r.onerror = () => toast('음성을 알아듣지 못했어요. 다시 말씀해 주세요.', true);
+      r.start();
+    }
+
+    // ---------- 모달(시트) ----------
+    function openSheet(html) {
+      $('sheet-root').innerHTML = '<div class="backdrop" data-action="backdrop"><div class="sheet" role="dialog" aria-modal="true">' + html + '</div></div>';
+      document.body.classList.add('noscroll');
+      const f = $('sheet-root').querySelector('[data-focus]');
+      if (f) f.focus();
+    }
+    function closeSheet() {
+      $('sheet-root').innerHTML = '';
+      document.body.classList.remove('noscroll');
+    }
+    const sheetHead = (icon, title) =>
+      '<div class="sheet-head"><h2>' + ic(icon) + ' ' + esc(title) + '</h2>' +
+      '<button type="button" class="x" data-action="closeSheet" aria-label="닫기">' + ic('close') + '</button></div>';
+
+    // ---------- 공통 화면 조각 ----------
+    function stateChip(p) {
+      if (p.state === 'open') return '<span class="chip ok"><i class="dot"></i>접수중 · 잔여 ' + p.remaining + '석</span>';
+      if (p.state === 'closing') return '<span class="chip soon">마감임박 · 잔여 ' + p.remaining + '석</span>';
+      if (p.state === 'full') return '<span class="chip closed">정원 마감 · 대기 ' + p.waiting + '명</span>';
+      return '<span class="chip closed">접수 마감</span>';
+    }
+
+    function programAction(p) {
+      if (p.myStatus === '신청완료') return '<button type="button" class="btn second" data-action="tab" data-tab="my">' + ic('check_circle') + ' 신청 완료 · 내 활동 보기</button>';
+      if (p.myStatus === '대기') return '<button type="button" class="btn second" disabled>' + ic('hourglass_top') + ' 대기 중 (' + p.myWaitNo + '번째)</button>';
+      if (p.state === 'closed') return '<button type="button" class="btn ghost" disabled>' + ic('lock_clock') + ' 접수 마감</button>';
+      if (p.state === 'full') return '<button type="button" class="btn amber" data-action="apply" data-id="' + esc(p.id) + '">' + ic('person_add') + ' 대기 신청하기 (현재 ' + (p.waiting + 1) + '번째 대기)</button>';
+      return '<button type="button" class="btn primary" data-action="apply" data-id="' + esc(p.id) + '">' + ic('assignment_turned_in') + ' 간편 신청하기</button>';
+    }
+
+    function programCard(p) {
+      return '<article class="card prog" data-program="' + esc(p.id) + '">' +
+        '<div class="badges">' + stateChip(p) +
+        (p.target ? '<span class="chip tag">' + esc(p.target) + '</span>' : '') +
+        (p.fee ? '<span class="chip tag">' + esc(p.fee) + '</span>' : '') + '</div>' +
+        '<h3>' + esc(p.title) + '</h3>' +
+        (p.subtitle ? '<p class="sub">' + ic('touch_app', 'sm') + esc(p.subtitle) + '</p>' : '') +
+        '<ul class="facts">' +
+        fact('calendar_month', p.startDate ? p.startDate + ' ~ ' + p.endDate : '') +
+        fact('schedule', p.timeText) + fact('pin_drop', p.place) +
+        fact('badge', p.instructor ? '강사: ' + p.instructor : '') + fact('menu_book', p.notes) +
+        '</ul>' + programAction(p) + '</article>';
+    }
+
+    function helpBanner(title, text) {
+      const c = S.app.center;
+      return '<section class="card help"><div class="help-top"><div class="help-ic">' + ic('support_agent', 'lg') + '</div><div>' +
+        '<h3>' + esc(title || '도움이 필요하신가요?') + '</h3><p>' + esc(text || '어려운 신청은 전화 한 통으로 친절히 도와드립니다.') + '</p></div></div>' +
+        '<a class="btn primary" href="tel:' + esc(c.phone.replace(/[^0-9]/g, '')) + '">' + ic('call') + ' ' + esc(c.phone) + ' 통화 연결</a></section>';
+    }
+
+    // ---------- 홈 ----------
+    function renderHome() {
+      const a = S.app;
+      const me = a.me;
+      const feat = a.programs.find(p => !p.myStatus && (p.state === 'open' || p.state === 'closing')) || a.programs[0];
+      const rec = a.programs.filter(p => p !== feat && p.state !== 'closed').slice(0, 3);
+      const first = a.todaySessions[0];
+      const todayBox = first
+        ? '<div class="today-box">' + ic('notifications_active', 'lg') + '<div class="grow"><small>오늘 ' + esc(first.startTime) + ' 복지관 일정</small><b>' + esc(first.title) + '</b><small>' + esc(first.place) + '</small></div>' +
+          '<button type="button" class="btn second mini" data-action="tab" data-tab="my">확인</button></div>'
+        : '<div class="today-box none">' + ic('event_available', 'lg') + '<div class="grow"><b>오늘은 예정된 수업이 없어요</b><small>프로그램에서 새 강좌를 찾아보세요</small></div></div>';
+
+      return '<div class="stack">' +
+        '<section class="card hero"><p class="hero-sub">' + esc(a.today.date) + ' (' + esc(a.today.weekday) + ') · ' + esc(a.center.name) + '</p>' +
+        '<h1>' + esc(me.name) + ' ' + honorific(me) + ',<br>활기찬 하루 되세요! 🌸</h1>' +
+        (a.demo ? '<p class="demo">미리보기 중이에요. 등록된 이메일이 없어 첫 번째 회원으로 보여드려요.</p>' : '') +
+        todayBox +
+        '<div class="stats">' +
+        '<button type="button" class="stat" data-action="tab" data-tab="my">' + ic('school') + '<span><small>신청·수강</small><b>' + a.stats.enrolled + '건</b></span></button>' +
+        '<button type="button" class="stat" data-action="tab" data-tab="my">' + ic('volunteer_activism') + '<span><small>봉사 누적</small><b>' + a.stats.volunteerHours + '시간</b></span></button>' +
+        '</div></section>' +
+
+        '<section class="quick" aria-label="바로가기">' +
+        qrow('volunteer_activism', '복지서비스', '맞춤 돌봄 · 여가 & 디지털 프로그램 신청', 'programs') +
+        qrow('campaign', '복지소식', '복지관 공지사항 · 이달의 행사 & 소식지', 'news') +
+        qrow('badge', '마이페이지', me.name + ' ' + honorific(me) + ' · 내 신청 내역 · 복지 캘린더 · 봉사 이력', 'my') +
+        '</section>' +
+
+        (feat ? '<section class="stack"><div class="sec-head"><h2>오늘의 추천 복지서비스</h2></div>' + programCard(feat) + '</section>' : '') +
+        (rec.length ? '<section class="stack"><div class="sec-head"><h2>이런 강좌도 있어요</h2><button type="button" class="link-btn" data-action="tab" data-tab="programs">전체보기 ' + ic('chevron_right', 'sm') + '</button></div>' + rec.map(programCard).join('') + '</section>' : '') +
+
+        '<section class="stack"><div class="sec-head"><h2>온마을 복지소식</h2><button type="button" class="link-btn" data-action="quick" data-to="community">더보기 ' + ic('chevron_right', 'sm') + '</button></div>' +
+        (a.posts.slice(0, 3).map(p =>
+          '<button type="button" class="qrow" data-action="quick" data-to="community"><span class="qic">' + ic(p.isNotice ? 'medical_services' : 'forum') + '</span><span class="qt"><b>' +
+          esc(p.title || p.content.slice(0, 24)) + '</b><small>' + (p.isNotice ? '공지사항 · ' : '') + esc(p.author) + ' · ' + esc(p.ago) + '</small></span></button>'
+        ).join('') || '<p class="empty">아직 올라온 소식이 없어요.</p>') + '</section>' +
+        helpBanner() + '</div>';
+    }
+
+    function qrow(icon, title, sub, to) {
+      return '<button type="button" class="qrow" data-action="quick" data-to="' + to + '"><span class="qic">' + ic(icon, 'lg') + '</span>' +
+        '<span class="qt"><b>' + esc(title) + '</b><small>' + esc(sub) + '</small></span>' + ic('chevron_right') + '</button>';
+    }
+
+    // ---------- 프로그램 ----------
+    function renderPrograms() {
+      const a = S.app;
+      return '<div class="stack">' +
+        '<section class="page-head"><div><p class="eyebrow">' + ic('eco', 'sm') + ' 행복한 배움과 활력</p><h1>이달의 복지관 강좌</h1></div>' +
+        '<button type="button" class="pill-btn" data-action="readPrograms">' + ic('volume_up', 'sm') + ' 음성안내</button></section>' +
+        '<div class="search">' + ic('search') +
+        '<input id="q" class="input" type="search" placeholder="강좌 이름을 찾아보세요" value="' + esc(S.q) + '" aria-label="강좌 검색" autocomplete="off">' +
+        '<button type="button" class="clear" id="q-clear" data-action="clearQ" aria-label="검색어 지우기"' + (S.q ? '' : ' hidden') + '>' + ic('cancel') + '</button></div>' +
+        '<div class="chips" role="group" aria-label="강좌 분류">' +
+        ['전체'].concat(a.categories).map(c => '<button type="button" class="fchip" data-action="setCat" data-cat="' + esc(c) + '" aria-pressed="' + (S.cat === c) + '">' + esc(c) + '</button>').join('') + '</div>' +
+        '<p class="count" id="prog-count"></p><div id="prog-list" class="stack"></div>' +
+        helpBanner('온라인 신청이 어려우신가요?', '어르신 눈높이에 맞춰 복지관 복지사가 전화로 친절히 신청을 도와드립니다.') + '</div>';
+    }
+
+    function visiblePrograms() {
+      const q = S.q.trim().toLowerCase();
+      return S.app.programs.filter(p =>
+        (S.cat === '전체' || p.category === S.cat) &&
+        (!q || (p.title + ' ' + p.subtitle + ' ' + p.place + ' ' + p.instructor).toLowerCase().indexOf(q) >= 0));
+    }
+
+    function renderProgramList() {
+      const list = visiblePrograms();
+      $('prog-count').innerHTML = '총 <b>' + list.length + '</b>개 강좌 개설중';
+      $('prog-list').innerHTML = list.length ? list.map(programCard).join('') : '<p class="empty">조건에 맞는 강좌가 없어요. 다른 분류나 검색어를 눌러 보세요.</p>';
+      $('q-clear').hidden = !S.q;
+    }
+
+    function openApplySheet(id) {
+      const p = S.app.programs.find(x => x.id === id);
+      if (!p) return;
+      const wait = p.state === 'full';
+      openSheet(sheetHead('edit_note', wait ? '대기 신청 확인' : '수강 신청 확인') +
+        '<div class="box"><p class="label">선택하신 강좌</p><h3>' + esc(p.title) + '</h3><ul class="facts">' +
+        fact('schedule', p.timeText) + fact('calendar_month', p.startDate + ' ~ ' + p.endDate) + fact('location_on', p.place) + fact('payments', p.fee) + '</ul></div>' +
+        '<div class="box"><p class="label">' + ic('account_circle', 'sm') + ' 신청자 정보</p><b>' + esc(S.app.me.name) + ' 회원님</b> <span>' + esc(S.app.me.phone) + '</span></div>' +
+        (wait ? '<p class="note">정원이 모두 찼어요. 대기 신청을 하시면 자리가 나는 순서대로 자동으로 등록돼요.</p>' : '') +
+        '<div class="sheet-actions"><button type="button" class="btn ghost" data-action="closeSheet">취소</button>' +
+        '<button type="button" class="btn primary" data-action="confirmApply" data-id="' + esc(id) + '" data-focus>' + ic('check') + (wait ? ' 대기 신청하기' : ' 신청 완료하기') + '</button></div>');
+    }
+
+    function openCancelSheet(id) {
+      const e = S.app.myEnrollments.find(x => x.id === id);
+      if (!e) return;
+      openSheet(sheetHead('event_busy', e.status === '대기' ? '대기 취소' : '신청 취소') +
+        '<div class="box"><h3>' + esc(e.program.title) + '</h3><p class="note">' + (e.status === '대기' ? '대기 신청을 취소할까요?' : '신청을 취소하면 자리가 다른 분께 넘어가요. 취소할까요?') + '</p></div>' +
+        '<div class="sheet-actions"><button type="button" class="btn ghost" data-action="closeSheet" data-focus>그대로 두기</button>' +
+        '<button type="button" class="btn primary" data-action="confirmCancel" data-id="' + esc(id) + '">' + ic('check') + ' 취소하기</button></div>');
+    }
+
+    // ---------- 어울림 마당 ----------
+    function renderCommunity() {
+      const a = S.app;
+      const seg = '<div class="seg" role="group" aria-label="보기 선택">' +
+        '<button type="button" data-action="setSeg" data-seg="stories" aria-pressed="' + (S.seg === 'stories') + '">' + ic('favorite', 'sm') + ' 주민 이야기</button>' +
+        '<button type="button" data-action="setSeg" data-seg="volunteer" aria-pressed="' + (S.seg === 'volunteer') + '">' + ic('handshake', 'sm') + ' 나눔 &amp; 봉사</button></div>';
+      return '<div class="stack"><section class="page-head"><div><p class="eyebrow">' + ic('forum', 'sm') + ' 이웃과 함께</p><h1>어울림 마당</h1></div></section>' +
+        seg + (S.seg === 'stories' ? storiesHtml(a) : volunteerHtml(a)) +
+        helpBanner('도움이 필요하신가요?', '복지관 사회복지사와 전화로 편하게 상담하세요.') + '</div>';
+    }
+
+    function storiesHtml(a) {
+      const say = S.postType === '전체' ? a.posts.filter(p => p.type === '일상소통')[0] : null;
+      const posts = a.posts.filter(p => (S.postType === '전체' || p.type === S.postType) && p !== say);
+      return '<button type="button" class="btn primary" data-action="compose">' + ic('edit_square') + ' 이야기 쓰기</button>' +
+        '<div class="chips" role="group" aria-label="글 종류">' +
+        ['전체'].concat(a.postTypes).map(t => '<button type="button" class="fchip" data-action="setPostType" data-type="' + esc(t) + '" aria-pressed="' + (S.postType === t) + '">' + esc(t) + '</button>').join('') + '</div>' +
+        (say ? '<section class="card today-say"><p class="eyebrow">' + ic('local_florist', 'sm') + ' 오늘의 마을 한마디</p><p class="post-body">“' + esc(say.content) + '”</p><p class="sub">' + esc(say.author) + ' · ' + esc(say.ago) + '</p></section>' : '') +
+        (posts.length ? posts.map(postCard).join('') : '<p class="empty">아직 이 종류의 이야기가 없어요. 첫 이야기를 들려주세요!</p>');
+    }
+
+    function postCard(p) {
+      const open = !!S.openComments[p.id];
+      return '<article class="card post" data-post="' + esc(p.id) + '"><header class="post-head"><div class="avatar" aria-hidden="true">' + esc(p.author.charAt(0)) + '</div>' +
+        '<div class="post-meta"><b>' + esc(p.author) + '</b><small>' + esc(p.ago) + (p.neighborhood ? ' · ' + esc(p.neighborhood) : '') + '</small></div>' +
+        '<span class="chip ' + (p.isNotice ? 'ok' : 'tag') + '">' + esc(p.type) + '</span></header>' +
+        (p.title ? '<h3>' + esc(p.title) + '</h3>' : '') +
+        '<p class="post-body">' + esc(p.content) + '</p>' +
+        '<div class="post-actions">' +
+        '<button type="button" class="act' + (p.likedByMe ? ' on' : '') + '" data-action="like" data-id="' + esc(p.id) + '" aria-pressed="' + p.likedByMe + '">' + ic('favorite', 'sm') + ' 따뜻해요 ' + p.likeCount + '</button>' +
+        '<button type="button" class="act" data-action="toggleComments" data-id="' + esc(p.id) + '" aria-expanded="' + open + '">' + ic('chat_bubble_outline', 'sm') + ' 댓글 ' + p.commentCount + '</button>' +
+        '<button type="button" class="act" data-action="readPost" data-id="' + esc(p.id) + '">' + ic('volume_up', 'sm') + ' 읽어주기</button></div>' +
+        (open ? commentsHtml(p) : '') + '</article>';
+    }
+
+    function commentsHtml(p) {
+      return '<div class="cmts">' +
+        (p.comments.map(c => '<div class="cmt"><b>' + esc(c.author) + '</b><small>' + esc(c.ago) + '</small><p>' + esc(c.content) + '</p></div>').join('') || '<p class="note">첫 댓글을 남겨 보세요.</p>') +
+        '<div class="cmt-form"><input class="input" data-draft="c-' + esc(p.id) + '" maxlength="300" placeholder="따뜻한 댓글을 남겨 보세요" value="' + esc(S.drafts['c-' + p.id] || '') + '" aria-label="댓글 입력">' +
+        '<button type="button" class="btn second sm" data-action="sendComment" data-id="' + esc(p.id) + '">' + ic('send', 'sm') + ' 댓글 남기기</button></div></div>';
+    }
+
+    function volunteerHtml(a) {
+      if (!a.recruits.length) return '<p class="empty">지금 모집 중인 봉사가 없어요.</p>';
+      return a.recruits.map(r => {
+        let btn;
+        if (r.myStatus) btn = '<button type="button" class="btn second" disabled>' + ic('check_circle') + ' 참여 신청 완료</button>';
+        else if (r.state === 'closed') btn = '<button type="button" class="btn ghost" disabled>' + ic('lock_clock') + ' 모집 마감</button>';
+        else if (r.state === 'full') btn = '<button type="button" class="btn ghost" disabled>' + ic('group') + ' 모집 인원 마감</button>';
+        else btn = '<button type="button" class="btn primary" data-action="volApply" data-id="' + esc(r.id) + '">' + ic('volunteer_activism') + ' 자원봉사 참여 신청하기</button>';
+        const dchip = r.state === 'closed' ? '<span class="chip closed">모집 마감</span>'
+          : '<span class="chip ' + (r.state === 'open' ? 'ok' : 'soon') + '">' + (r.dDay === 0 ? '오늘 마감' : r.dDay !== null ? '마감 D-' + r.dDay : '모집중') + '</span>';
+        return '<article class="card vol-card"><div class="vol-top">' + dchip + '<span class="chip tag">봉사자 모집 · 남은 자리 ' + r.remaining + '명</span></div>' +
+          '<h3>' + esc(r.title) + '</h3><p class="post-body">' + esc(r.description) + '</p><ul class="facts">' +
+          fact('calendar_today', r.date ? dateKo(r.date) + (r.startTime ? ' ' + r.startTime : '') : '') + fact('location_on', r.place) + fact('schedule', r.hours ? '봉사시간 ' + r.hours + '시간 인정' : '') +
+          '</ul>' + btn + '</article>';
+      }).join('');
+    }
+
+    function openCompose() {
+      const a = S.app;
+      openSheet(sheetHead('edit_square', '마을 이야기 나누기') +
+        '<label class="field"><span>이야기 종류</span><select id="c-type" class="input">' + a.writableTypes.map(t => '<option value="' + esc(t) + '">' + esc(t) + '</option>').join('') + '</select></label>' +
+        '<label class="field"><span>제목 (선택)</span><input id="c-title" class="input" maxlength="40" placeholder="예: 손수 만든 첫 목도리"></label>' +
+        '<label class="field"><span>내용</span><textarea id="c-content" class="input" maxlength="1000" placeholder="이웃에게 들려주고 싶은 이야기를 적어 주세요." data-focus></textarea></label>' +
+        '<div class="sheet-actions" style="grid-template-columns:1fr"><button type="button" class="btn second" data-action="dictate">' + ic('mic') + ' 말로 쓰기</button></div>' +
+        '<div class="sheet-actions"><button type="button" class="btn ghost" data-action="closeSheet">닫기</button>' +
+        '<button type="button" class="btn primary" data-action="sendPost">' + ic('send') + ' 올리기</button></div>');
+    }
+
+    // ---------- 마이 활동 ----------
+    function renderMy() {
+      const a = S.app;
+      const me = a.me;
+      const sessions = a.todaySessions.map(s =>
+        '<div class="session"><div><small>오늘 ' + esc(s.startTime) + (s.endTime ? ' ~ ' + esc(s.endTime) : '') + '</small><h3>' + esc(s.title) + '</h3><p class="sub">' + ic('location_on', 'sm') + esc(s.place) + '</p></div>' +
+        (s.attended ? '<button type="button" class="btn second" disabled>' + ic('check_circle') + ' 오늘 출석 완료</button>'
+          : '<button type="button" class="btn primary" data-action="checkin" data-id="' + esc(s.enrollmentId) + '">' + ic('how_to_reg') + ' 출석체크 하기</button>') + '</div>').join('');
+
+      return '<div class="stack">' +
+        '<section class="card"><div class="profile"><div class="avatar" aria-hidden="true">' + esc(me.name.charAt(0)) + '</div><div>' +
+        (me.grade ? '<span class="chip ok">' + ic('military_tech', 'sm') + esc(me.grade) + '</span>' : '') +
+        '<h2>' + esc(me.name) + ' ' + honorific(me) + '</h2><p class="sub">' + (me.age !== null ? me.age + '세 · ' : '') + esc(me.neighborhood) + ' 이웃</p></div></div>' +
+        (a.demo ? '<p class="demo">미리보기 중이에요. 등록된 이메일이 없어 첫 번째 회원으로 보여드려요.</p>' : '') +
+        '<div class="mystats"><div class="mystat">' + ic('school') + '<b>' + a.stats.enrolled + '건</b><span>수강 프로그램</span></div>' +
+        '<div class="mystat">' + ic('volunteer_activism') + '<b>' + a.stats.volunteerHours + '시간</b><span>봉사 활동</span></div>' +
+        '<div class="mystat">' + ic('forum') + '<b>' + a.stats.posts + '개</b><span>작성한 글</span></div></div></section>' +
+
+        '<section class="card"><h2>' + ic('notifications_active') + ' 오늘의 복지관 일정</h2><div style="margin-top:12px">' +
+        (sessions || '<p class="empty">오늘은 예정된 수업이 없어요.</p>') + '</div></section>' +
+
+        calendarHtml() + enrollmentsHtml() + volunteerSummaryHtml() +
+
+        '<section class="card"><h2>' + ic('tune') + ' 어르신 간편 설정</h2><p class="note" style="margin-top:6px">글자 크기를 바꿀 수 있어요.</p><div class="fontseg" role="group" aria-label="글자 크기">' +
+        FONT_LEVELS.map((f, i) => '<button type="button" data-action="font" data-level="' + i + '" aria-pressed="' + (S.font === i) + '">' + f.label + '</button>').join('') + '</div></section>' +
+        helpBanner('담당 사회복지사 1:1 전화 상담', '궁금한 점은 언제든 전화로 물어보세요.') + '</div>';
+    }
+
+    function calendarHtml() {
+      const a = S.app;
+      const parts = S.calMonth.split('-').map(Number);
+      const y = parts[0], m = parts[1];
+      const firstDow = new Date(y, m - 1, 1).getDay();
+      const days = new Date(y, m, 0).getDate();
+      const ev = {};
+      a.scheduleEvents.forEach(e => { (ev[e.date] = ev[e.date] || []).push(e); });
+      let cells = '';
+      '일월화수목금토'.split('').forEach(d => { cells += '<span class="cal-dow">' + d + '</span>'; });
+      for (let i = 0; i < firstDow; i++) cells += '<span class="cal-cell empty"></span>';
+      for (let d = 1; d <= days; d++) {
+        const key = S.calMonth + '-' + pad(d);
+        const list = ev[key] || [];
+        const cls = 'cal-cell' + (key === a.today.date ? ' today' : '') + (key === S.calSel ? ' sel' : '');
+        const dots = (list.some(x => x.kind === 'class') ? '<i></i>' : '') + (list.some(x => x.kind === 'volunteer') ? '<i class="v"></i>' : '');
+        cells += '<button type="button" class="' + cls + '" data-action="calDay" data-date="' + key + '" aria-label="' + m + '월 ' + d + '일' + (list.length ? ', 일정 ' + list.length + '건' : '') + '">' + d + '<span class="dots">' + dots + '</span></button>';
+      }
+      const sel = S.calSel && S.calSel.slice(0, 7) === S.calMonth ? (ev[S.calSel] || []) : null;
+      return '<section class="card"><div class="cal-head"><button type="button" class="cal-nav" data-action="calPrev" aria-label="이전 달">' + ic('chevron_left') + '</button>' +
+        '<h2>' + ic('calendar_month') + ' ' + y + '년 ' + m + '월</h2><button type="button" class="cal-nav" data-action="calNext" aria-label="다음 달">' + ic('chevron_right') + '</button></div>' +
+        '<div class="cal-grid">' + cells + '</div>' +
+        '<div class="legend"><span><i></i>복지관 강의일</span><span><i class="v"></i>이웃 나눔 일정</span></div>' +
+        (sel ? '<div class="day-list"><b>' + dateKo(S.calSel) + ' 일정</b>' +
+          (sel.length ? sel.map(e => '<div class="log"><span>' + esc(e.title) + (e.time ? ' · ' + esc(e.time) : '') + '</span><b>' + (e.kind === 'class' ? '수업' : '봉사') + '</b></div>').join('') : '<p class="note">이 날은 일정이 없어요.</p>') + '</div>' : '') +
+        '</section>';
+    }
+
+    function enrollmentsHtml() {
+      const list = S.app.myEnrollments;
+      return '<section class="card"><div class="sec-head"><h2>' + ic('assignment') + ' 내가 신청한 프로그램</h2><span class="count">총 ' + list.length + '건</span></div><div class="stack" style="margin-top:12px">' +
+        (list.map(e => {
+          const p = e.program;
+          let chip;
+          if (e.status === '대기') chip = '<span class="chip soon">대기 중 (' + e.waitNo + '번째)</span>';
+          else if (!e.started) chip = '<span class="chip ok">신청 완료 (개강 대기)</span> <small>' + dateKo(p.startDate) + ' 개강</small>';
+          else chip = '<span class="chip ok"><i class="dot"></i>수강 진행중 (' + e.attended + '회/' + e.totalSessions + '회)</span>';
+          return '<article class="enr" data-enr="' + esc(e.id) + '">' + chip + '<h3 style="margin-top:8px">' + esc(p.title) + '</h3><ul class="facts">' +
+            fact('schedule', p.timeText) + fact('meeting_room', p.place) + fact('person', p.instructor ? '담당: ' + p.instructor : '') + '</ul>' +
+            (e.status === '신청완료' && e.started && e.totalSessions ? '<div class="pg-label"><span>출석 진행률</span><b>' + e.progress + '% 달성</b></div><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + e.progress + '"><i style="width:' + e.progress + '%"></i></div>' : '') +
+            '<button type="button" class="btn ghost sm" style="margin-top:10px" data-action="openCancel" data-id="' + esc(e.id) + '">' + ic('event_busy', 'sm') + (e.status === '대기' ? ' 대기 취소' : ' 신청 취소') + '</button></article>';
+        }).join('') || '<p class="empty">아직 신청한 프로그램이 없어요. 프로그램 신청에서 찾아보세요.</p>') + '</div></section>';
+    }
+
+    function volunteerSummaryHtml() {
+      const v = S.app.volunteer;
+      return '<section class="card"><h2>' + ic('volunteer_activism') + ' 나의 따뜻한 나눔 기록</h2><p class="note" style="margin-top:6px">올해 누적 봉사시간</p>' +
+        '<p class="big-num">' + v.totalHours + ' 시간</p>' + (v.linked1365 ? '<span class="chip ok">' + ic('check_circle', 'sm') + ' 1365 연계 완료</span>' : '') +
+        (v.pending.length ? '<p class="note" style="margin-top:12px"><b>신청한 봉사</b></p>' + v.pending.map(x => '<div class="log"><span>' + esc(x.title) + (x.date ? ' · ' + dateKo(x.date) : '') + '</span><b>신청 완료</b></div>').join('') : '') +
+        '<p class="note" style="margin-top:12px"><b>최근 참여 내역</b></p>' +
+        (v.logs.map(x => '<div class="log"><span>' + esc(x.title) + '<br><small>' + esc(x.date) + '</small></span><b>+' + x.hours + '시간</b></div>').join('') || '<p class="empty">아직 참여 내역이 없어요.</p>') + '</section>';
+    }
+
+    // ---------- 그리기 ----------
+    function renderTabbar() {
+      document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-current', b.dataset.tab === S.tab ? 'page' : 'false'));
+    }
+
+    function render() {
+      renderTabbar();
+      const main = $('main');
+      if (!S.app) {
+        main.innerHTML = S.error
+          ? '<div class="error-box"><h3>화면을 불러오지 못했어요</h3><p>' + esc(S.error) + '</p><button type="button" class="btn primary" style="margin-top:12px" data-action="retry">다시 시도</button></div>'
+          : '<div class="card center">불러오는 중입니다…</div>';
+        return;
+      }
+      main.innerHTML = { home: renderHome, programs: renderPrograms, community: renderCommunity, my: renderMy }[S.tab]();
+      if (S.tab === 'programs') renderProgramList();
+    }
+
+    function go(tab) {
+      S.tab = tab;
+      closeSheet();
+      render();
+      window.scrollTo(0, 0);
+    }
+
+    // ---------- 이벤트 ----------
+    const ACTIONS = {
+      tab: el => go(el.dataset.tab),
+      quick: el => {
+        if (el.dataset.to === 'news') { S.seg = 'stories'; S.postType = '공지'; go('community'); }
+        else if (el.dataset.to === 'community') { S.seg = 'stories'; S.postType = '전체'; go('community'); }
+        else go(el.dataset.to);
+      },
+      retry: () => loadApp(),
+      fontCycle: () => applyFont((S.font + 1) % FONT_LEVELS.length),
+      font: el => { applyFont(Number(el.dataset.level)); render(); },
+      closeSheet: () => closeSheet(),
+      setCat: el => { S.cat = el.dataset.cat; render(); },
+      clearQ: () => { S.q = ''; $('q').value = ''; renderProgramList(); $('q').focus(); },
+      readPrograms: () => {
+        const list = visiblePrograms();
+        speak(list.length ? '총 ' + list.length + '개 강좌가 있습니다. ' + list.map((p, i) => (i + 1) + '번, ' + p.title + ', ' + p.timeText + ', ' + p.place).join('. ') : '조건에 맞는 강좌가 없습니다.');
+      },
+      apply: el => openApplySheet(el.dataset.id),
+      confirmApply: el => { closeSheet(); return act('applyProgram', [el.dataset.id]); },
+      openCancel: el => openCancelSheet(el.dataset.id),
+      confirmCancel: el => { closeSheet(); return act('cancelApplication', [el.dataset.id]); },
+      checkin: el => act('checkIn', [el.dataset.id]),
+      setSeg: el => { S.seg = el.dataset.seg; render(); },
+      setPostType: el => { S.postType = el.dataset.type; render(); },
+      like: el => act('toggleLike', [el.dataset.id]),
+      toggleComments: el => { S.openComments[el.dataset.id] = !S.openComments[el.dataset.id]; render(); },
+      sendComment: async el => {
+        const key = 'c-' + el.dataset.id;
+        const text = (S.drafts[key] || '').trim();
+        if (!text) { toast('댓글 내용을 입력해 주세요.', true); return; }
+        const draft = S.drafts[key];
+        delete S.drafts[key];
+        const res = await act('addComment', [el.dataset.id, text]);
+        if (!res) S.drafts[key] = draft;
+      },
+      readPost: el => {
+        const p = S.app.posts.find(x => x.id === el.dataset.id);
+        if (p) speak((p.title ? p.title + '. ' : '') + p.content);
+      },
+      compose: () => openCompose(),
+      dictate: () => dictate(),
+      sendPost: async () => {
+        const content = $('c-content').value.trim();
+        if (!content) { toast('내용을 입력해 주세요.', true); $('c-content').focus(); return; }
+        const res = await act('createPost', [{ type: $('c-type').value, title: $('c-title').value, content: content }]);
+        if (res) closeSheet();
+      },
+      volApply: el => act('applyVolunteer', [el.dataset.id]),
+      calPrev: () => shiftMonth(-1),
+      calNext: () => shiftMonth(1),
+      calDay: el => { S.calSel = S.calSel === el.dataset.date ? '' : el.dataset.date; render(); }
+    };
+
+    function shiftMonth(delta) {
+      const p = S.calMonth.split('-').map(Number);
+      const d = new Date(p[0], p[1] - 1 + delta, 1);
+      S.calMonth = d.getFullYear() + '-' + pad(d.getMonth() + 1);
+      S.calSel = '';
+      render();
+    }
+
+    document.addEventListener('click', e => {
+      const el = e.target.closest('[data-action]');
+      if (!el) return;
+      if (el.dataset.action === 'backdrop') { if (e.target === el) closeSheet(); return; }
+      const fn = ACTIONS[el.dataset.action];
+      if (fn) fn(el);
+    });
+
+    document.addEventListener('input', e => {
+      const t = e.target;
+      if (t.id === 'q') { S.q = t.value; renderProgramList(); }
+      else if (t.dataset && t.dataset.draft) S.drafts[t.dataset.draft] = t.value;
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && $('sheet-root').innerHTML) closeSheet();
+    });
+
+    loadFont();
+    loadApp();
+  </script>
+</body>
+</html>
