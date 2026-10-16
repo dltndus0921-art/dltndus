@@ -1,0 +1,7 @@
+**/*.md
+test/**
+node_modules/**
+.git/**
+.gitignore
+.claspignore
+desktop.ini

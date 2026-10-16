@@ -1,0 +1,13 @@
+# 개인정보가 담길 수 있는 데이터 파일은 커밋하지 않는다
+*.csv
+*.xlsx
+*.xls
+*.tsv
+
+# 로그인 정보, 시스템 파일
+.clasprc.json
+desktop.ini
+node_modules/
+
+# Drive 바로가기 파일 (클라우드 전용이라 Git이 읽을 수 없음)
+*.gsheet
